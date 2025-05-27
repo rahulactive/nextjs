@@ -1,42 +1,30 @@
-name: Deploy Next.js to Ubuntu Server
+name: Deploy to Ubuntu
 
 on:
   push:
     branches:
-      - main
-
-  workflow_dispatch:  # Allows manual trigger from GitHub UI
+      - main  # or master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Copy project files to server
-        uses: appleboy/scp-action@v0.1.6
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 34.221.34.171              # Your server IP
-          username: root                   # Your SSH username
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ./
-          target: /var/www/nextapp
-          strip_components: 1              # ✅ keep this to avoid nesting inside a repo folder
-
-      - name: Run build & start app via SSH
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: 34.221.34.171
-          username: root
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/nextapp
+            cd /path/to/your/app
+            git pull origin main
             npm install
             npm run build
-            npx pm2 delete sedeer-app || true
-            npx pm2 start npm --name "sedeer-app" -- start
+            npx pm2 delete my-app || true
+            npx pm2 start npm --name "my-app" -- start
             npx pm2 save
-            npx pm2 list
 
