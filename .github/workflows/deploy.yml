@@ -1,0 +1,52 @@
+name: Deploy Next.js to Ubuntu Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Copy repo files to server
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: 34.221.34.171            # Your server IP
+          username: root                  # Your SSH username
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: |
+            components.json
+            next.config.ts
+            node_modules/
+            package-lock.json
+            process.env
+            README.md
+            tsconfig.json
+            eslint.config.mjs
+            next-env.d.ts
+            package.json
+            postcss.config.mjs
+            public/
+            src/
+          target: /var/www/nextapp
+          recursive: true
+
+      - name: SSH: Run build and start app with pm2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: 34.221.34.171             # Your server IP
+          username: root                  # Your SSH username
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/nextapp
+            npm install
+            npm run build
+            npx pm2 delete sedeer-app || true
+            npx pm2 start npm --name "sedeer-app" -- start
+            npx pm2 save
+            npx pm2 list
