@@ -5,7 +5,7 @@ on:
     branches:
       - main
 
-  workflow_dispatch:  # allows manual trigger from GitHub UI
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
   deploy:
@@ -19,11 +19,11 @@ jobs:
         uses: appleboy/scp-action@v0.1.6
         with:
           host: 34.221.34.171              # Your server IP
-          username: root                  # Your SSH username
+          username: root                   # Your SSH username
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ./
           target: /var/www/nextapp
-          strip_components: 1
+          strip_components: 1              # ✅ keep this to avoid nesting inside a repo folder
 
       - name: Run build & start app via SSH
         uses: appleboy/ssh-action@v0.1.6
