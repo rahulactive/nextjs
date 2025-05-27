@@ -5,6 +5,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch:  # allows manual trigger from GitHub UI
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,13 +18,12 @@ jobs:
       - name: Copy project files to server
         uses: appleboy/scp-action@v0.1.6
         with:
-          host: 34.221.34.171
-          username: root
+          host: 34.221.34.171              # Your server IP
+          username: root                  # Your SSH username
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ./
           target: /var/www/nextapp
           strip_components: 1
-          recursive: true
 
       - name: Run build & start app via SSH
         uses: appleboy/ssh-action@v0.1.6
