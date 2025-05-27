@@ -10,37 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Copy repo files to server
+      - name: Copy project files to server
         uses: appleboy/scp-action@v0.1.6
         with:
-          host: 34.221.34.171            # Your server IP
-          username: root                  # Your SSH username
+          host: 34.221.34.171
+          username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: |
-            components.json
-            next.config.ts
-            node_modules/
-            package-lock.json
-            process.env
-            README.md
-            tsconfig.json
-            eslint.config.mjs
-            next-env.d.ts
-            package.json
-            postcss.config.mjs
-            public/
-            src/
+          source: ./
           target: /var/www/nextapp
+          strip_components: 1
           recursive: true
 
-      - name: SSH: Run build and start app with pm2
+      - name: Run build & start app via SSH
         uses: appleboy/ssh-action@v0.1.6
         with:
-          host: 34.221.34.171             # Your server IP
-          username: root                  # Your SSH username
+          host: 34.221.34.171
+          username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/nextapp
@@ -50,3 +38,4 @@ jobs:
             npx pm2 start npm --name "sedeer-app" -- start
             npx pm2 save
             npx pm2 list
+
