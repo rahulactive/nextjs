@@ -22,11 +22,12 @@ pipeline {
             steps {
                 sh '''
                     # Optional: Clean old files (be careful with this)
-                    sudo chown -R jenkins:jenkins /var/www/html
+                    sudo chown -R jenkins:jenkins /var/www/htmil
                     rm -rf /var/www/html/*
 
                     # Copy build files (adjust path if needed)
-                    cp -r . /var/www/html/
+                    #cp -r . /var/www/html/
+                    rsync -a --exclude='.git' ./ /var/www/html/
 
                     # Restart app with PM2
                     pm2 delete nextjs-app || true
