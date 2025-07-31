@@ -22,6 +22,7 @@ pipeline {
             steps {
                 sh '''
                     # Optional: Clean old files (be careful with this)
+                    sudo chown -R jenkins:jenkins /var/www/html
                     rm -rf /var/www/html/*
 
                     # Copy build files (adjust path if needed)
