@@ -22,10 +22,10 @@ pipeline {
             steps {
                 sh '''
                     # Optional: Clean old files (be careful with this)
-                    sudo rm -rf /var/www/html/*
+                    rm -rf /var/www/html/*
 
                     # Copy build files (adjust path if needed)
-                    sudo cp -r . /var/www/html/
+                    cp -r . /var/www/html/
 
                     # Restart app with PM2
                     pm2 delete nextjs-app || true
