@@ -9,31 +9,26 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 sh '''
-                    npm install
-                    npm run build
+                    docker build -t nextjs-app .
                 '''
             }
         }
 
-        stage('Deploy') {
+        stage('Run Docker Container') {
             steps {
                 sh '''
-                    # Optional: Clean old files (be careful with this)
-                    sudo chown -R jenkins:jenkins /var/www/html
-                    rm -rf /var/www/html/*
+                    # Stop and remove any existing container
+                    docker stop nextjs-container || true
+                    docker rm nextjs-container || true
 
-                    # Copy build files (adjust path if needed)
-                    #cp -r . /var/www/html/
-                    rsync -a --exclude='.git' ./ /var/www/html/
-
-                    # Restart app with PM2
-                    pm2 delete nextjs-app || true
-                    npx pm2 start npm --name "nextjs-app" -- start
+                    # Run the container
+                    docker run -d --name nextjs-container -p 3000:3000 nextjs-app
                 '''
             }
         }
     }
 }
+
